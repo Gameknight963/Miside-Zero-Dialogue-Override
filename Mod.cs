@@ -33,10 +33,15 @@ namespace Miside_Zero_Dialouge_Override
         string nodesJsonPath => Path.Combine(tmp, "nodes.json");
 
         public static WindowsMediaPlayer wmp = new WindowsMediaPlayer();
+        private static AudioSource source;
 
+        public static MelonLogger.Instance Logger;
 
         public override void OnInitializeMelon()
         {
+            Logger = LoggerInstance; // for use outside this class
+
+            LoggerInstance.Msg("Loading custom dialogue pack...");
             Directory.CreateDirectory(dialougePacksPath);
             string[] files = Directory.GetFiles(dialougePacksPath);
             if (files.Length == 0) 
@@ -48,6 +53,7 @@ namespace Miside_Zero_Dialouge_Override
                 if (Directory.Exists(tmp)) Directory.Delete(tmp, true);
                 ZipFile.ExtractToDirectory(file, tmp);
                 customDtos = NodeAudioManager.LoadJson(nodesJsonPath);
+                LoggerInstance.Msg("Loaded custom dialogue!");
             }
             catch (Exception ex)
             {
@@ -59,6 +65,8 @@ namespace Miside_Zero_Dialouge_Override
         {
             if (!isGameScene) return;
 
+
+            LoggerInstance.Msg("Mapping game dialogue...");
             trees = UnityEngine.Object.FindObjectsOfType<DialogueTree>();
 
             MappedNodes = trees.SelectMany(t => t.GetAllNodes()).ToList();
@@ -73,6 +81,27 @@ namespace Miside_Zero_Dialouge_Override
                      .Select(n => MappedNodes.IndexOf(n))
                      .ToArray()
             }).ToList();
+
+            LoggerInstance.Msg("Creating audiohost...");
+            GameObject audioHost = new GameObject("AudioHost");
+            source = audioHost.AddComponent<AudioSource>();
+            UnityEngine.Object.DontDestroyOnLoad(audioHost);
+        }
+
+        public static void PlayAudio(string filePath)
+        {
+            if (source == null)
+            {
+                MelonLogger.Warning("AudioSource is null! Reinitializing...");
+                var audioHost = new GameObject("AudioHost");
+                source = audioHost.AddComponent<AudioSource>();
+                UnityEngine.Object.DontDestroyOnLoad(audioHost);
+            }
+            AudioClip clip = AudioImporter.LoadAudio(filePath);
+            if (clip != null)
+            {
+                source.PlayOneShot(clip);
+            }
         }
     }
 
@@ -83,17 +112,14 @@ namespace Miside_Zero_Dialouge_Override
         {
             if (node == null) return;
 
-            MelonLogger.Msg("Searching for matching dialouge");
             int index = Mod.MappedNodes.FindIndex(n => n == node);
             if (index == -1) return;
-            MelonLogger.Msg("Getting dtos...");
             DialogueNodeDTO dto = Mod.customDtos.nodes[index];
             // might add support for this soon, currently inacessible without
             // manually editing json and also may just not work
             node.dialogueText = dto.dialogueText;
 
-            Mod.wmp.URL = NodeAudioManager.GetNodeAudioClip(dto);
-            Mod.wmp.controls.play();
+            Mod.PlayAudio(NodeAudioManager.GetNodeAudioClip(dto));
         }
     }
 }
