@@ -7,15 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using WMPLib;
 using System.IO;
 using System.IO.Compression;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
-using System.Diagnostics;
-using System.Reflection;
-using System.Linq.Expressions;
-using UnityEngine.UIElements;
-using Il2CppSystem;
 
 namespace Miside_Zero_Dialouge_Override
 {
@@ -35,13 +31,11 @@ namespace Miside_Zero_Dialouge_Override
         string dialougePacksPath = Path.Combine(MelonEnvironment.ModsDirectory, "mszdlg");
         public static string tmp => Path.Combine(UnityEngine.Application.temporaryCachePath, "Miside Zero Dialouge Override");
         string nodesJsonPath => Path.Combine(tmp, "nodes.json");
-        
+
+        public static WindowsMediaPlayer wmp = new WindowsMediaPlayer();
         private static AudioSource source;
 
         public static MelonLogger.Instance Logger;
-
-        public static float AvgDt;
-        private float smoothing = 5f;
 
         public override void OnInitializeMelon()
         {
@@ -51,7 +45,7 @@ namespace Miside_Zero_Dialouge_Override
             Directory.CreateDirectory(dialougePacksPath);
             string[] files = Directory.GetFiles(dialougePacksPath);
             if (files.Length == 0) 
-                throw new System.InvalidOperationException($"No packs found in {dialougePacksPath}");
+                throw new InvalidOperationException($"No packs found in {dialougePacksPath}");
 
             string file = files[0];
             try
@@ -61,15 +55,16 @@ namespace Miside_Zero_Dialouge_Override
                 customDtos = NodeAudioManager.LoadJson(nodesJsonPath);
                 LoggerInstance.Msg("Loaded custom dialogue!");
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                throw new System.InvalidOperationException($"{ex.GetType().Name} while reading dialogue pack \"{file}\": {ex.Message}");
+                throw new InvalidOperationException ($"{ex.GetType().Name} while reading dialogue pack \"{file}\": {ex.Message}");
             }
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
             if (!isGameScene) return;
+
 
             LoggerInstance.Msg("Mapping game dialogue...");
             trees = UnityEngine.Object.FindObjectsOfType<DialogueTree>();
@@ -93,43 +88,38 @@ namespace Miside_Zero_Dialouge_Override
             UnityEngine.Object.DontDestroyOnLoad(audioHost);
         }
 
-        public override void OnUpdate()
+        public static void PlayAudio(string filePath)
         {
-            AvgDt = (AvgDt * (smoothing - 1) + Time.unscaledDeltaTime) / smoothing;
+            if (source == null)
+            {
+                MelonLogger.Warning("AudioSource is null! Reinitializing...");
+                var audioHost = new GameObject("AudioHost");
+                source = audioHost.AddComponent<AudioSource>();
+                UnityEngine.Object.DontDestroyOnLoad(audioHost);
+            }
+            AudioClip clip = AudioImporter.LoadAudio(filePath);
+            if (clip != null)
+            {
+                source.PlayOneShot(clip);
+            }
         }
     }
 
     [HarmonyPatch(typeof(DialogueTree), "PlayNode")]
     public static class DialogueTreePatch
     {
-
         static void Prefix(DialogueTree __instance, DialogueNode node)
         {
             if (node == null) return;
 
             int index = Mod.MappedNodes.FindIndex(n => n == node);
             if (index == -1) return;
-
             DialogueNodeDTO dto = Mod.customDtos.nodes[index];
-
-            string path = NodeAudioManager.GetNodeAudioPath(dto);
-            AudioClip clip = AudioImporter.LoadAudio(path);
-
-            // we're forced to estimate how long it will take based on fps due
-            // to multiple factors.
-
-            // not an ideal fix.
-
-            // i couldn't figure out how to get the variable for
-            // some reason, if he changes typeSpeed im cooked
-
-            float typeSpeed = 0.025f; 
-            float perChar = Mathf.Ceil(typeSpeed / Mod.AvgDt) * Mod.AvgDt;
-            float totalTime = dto.dialogueText.Length * perChar;
-
+            // might add support for this soon, currently inacessible without
+            // manually editing json and also may just not work
             node.dialogueText = dto.dialogueText;
-            node.delay = dto.delay + totalTime;
-            node.voiceClip = clip;
+
+            Mod.PlayAudio(NodeAudioManager.GetNodeAudioClip(dto));
         }
     }
 }
