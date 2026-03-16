@@ -1,5 +1,5 @@
 ﻿using MelonLoader;
-using Miside_Zero_Dialouge_Override;
+using Miside_Zero_Dialogue_Override;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
