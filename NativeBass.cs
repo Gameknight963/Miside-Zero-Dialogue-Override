@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Miside_Zero_Dialouge_Override
+namespace Miside_Zero_Dialogue_Override
 {
     // get base.dll at https://www.un4seen.com/
 
