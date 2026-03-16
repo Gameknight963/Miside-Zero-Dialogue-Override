@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Miside_Zero_Dialouge_Override
+namespace Miside_Zero_Dialogue_Override
 {
     public class NodeAudioManager
     {
@@ -19,7 +19,7 @@ namespace Miside_Zero_Dialouge_Override
             );
             return (files.Length > 0);
         }
-        public static string GetNodeAudioClip(DialogueNodeDTO node)
+        public static string GetNodeAudioPath(DialogueNodeDTO node)
         {
             if (!Directory.Exists(Mod.tmp))
             {

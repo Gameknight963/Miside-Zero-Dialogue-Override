@@ -1,4 +1,4 @@
-﻿using Miside_Zero_Dialouge_Override;
+﻿using Miside_Zero_Dialogue_Override;
 using UnityEngine;
 using System;
 
