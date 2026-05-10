@@ -2,6 +2,7 @@
 using Il2Cpp;
 using MelonLoader;
 using MelonLoader.Utils;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -19,7 +20,7 @@ namespace Miside_Zero_Dialogue_Override
         DialogueTree[] trees;
 
         public static List<DialogueNode> MappedNodes;
-        public static DialogueForest customDtos;
+        public static DialogueForest CustomDtos { get; set; }
         List<DialogueNodeDTO> mappedDtos;
 
         public static bool disabled = false;
@@ -35,22 +36,38 @@ namespace Miside_Zero_Dialogue_Override
         public static float AvgDt;
         private const float smoothing = 5f;
 
-        public override void OnInitializeMelon()
-        {
-            Logger = LoggerInstance; // for use outside this class
+        /// <summary>
+        /// Gets or sets whether user dialogue packs should be loaded.
+        /// Defaults to true.
+        /// </summary>
+        public bool PacksEnabled { get; set; } = true;
 
+        public Mod()
+        {
+            Logger = LoggerInstance;
+        }
+
+        public override void OnLateInitializeMelon()
+        {
+            if (!PacksEnabled)
+            {
+                LoggerInstance.Msg("Custom packs have been disabled by a mod." +
+                    "The mod will probably load its own pack instead.");
+                return;
+            }
             LoggerInstance.Msg("Loading custom dialogue pack...");
             Directory.CreateDirectory(dialougePacksPath);
             string[] files = Directory.GetFiles(dialougePacksPath);
             if (files.Length == 0)
-                throw new System.InvalidOperationException($"No packs found in {dialougePacksPath}");
+            {
+                LoggerInstance.Error($"No packs found in {dialougePacksPath}");
+                return;
+            }
 
             string file = files[0];
             try
             {
-                if (Directory.Exists(tmp)) Directory.Delete(tmp, true);
-                ZipFile.ExtractToDirectory(file, tmp);
-                customDtos = NodeAudioManager.LoadJson(nodesJsonPath);
+                LoadMszdlg(file);
                 LoggerInstance.Msg("Loaded custom dialogue!");
             }
             catch (System.Exception ex)
@@ -64,7 +81,7 @@ namespace Miside_Zero_Dialogue_Override
             if (!IsGameScene) return;
 
             LoggerInstance.Msg("Mapping game dialogue...");
-            trees = UnityEngine.Object.FindObjectsOfType<DialogueTree>();
+            trees = Object.FindObjectsOfType<DialogueTree>();
 
             MappedNodes = trees.SelectMany(t => t.GetAllNodes()).ToList();
             mappedDtos = MappedNodes.Select(node => new DialogueNodeDTO
@@ -88,6 +105,14 @@ namespace Miside_Zero_Dialogue_Override
         public override void OnUpdate()
         {
             AvgDt = (AvgDt * (smoothing - 1) + Time.unscaledDeltaTime) / smoothing;
+        }
+
+        public static void LoadMszdlg(string path)
+        {
+            if (Directory.Exists(tmp)) Directory.Delete(tmp, true);
+            ZipFile.ExtractToDirectory(path, tmp);
+            string json = File.ReadAllText(nodesJsonPath);
+            CustomDtos = JsonConvert.DeserializeObject<DialogueForest>(json);
         }
     }
 }

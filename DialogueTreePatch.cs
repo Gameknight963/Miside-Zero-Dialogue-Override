@@ -11,32 +11,37 @@ namespace Miside_Zero_Dialogue_Override
         {
             if (node == null)
             {
-                Mod.Logger.Error("node is null, returning...");
+                Mod.Logger.Warning("node is null, returning...");
+                return;
+            }
+            int index = Mod.MappedNodes.FindIndex(n => n == node);
+
+            if (index == -1)
+            {
+                Mod.Logger.Error("node does not have an audio clip, returning...");
+                return;
+            }
+
+            if (Mod.CustomDtos == null)
+            {
+                Mod.Logger.Error("No custom dialogue loaded");
+                return;
+            }
+
+            if (Mod.CustomDtos.nodes == null || index >= Mod.CustomDtos.nodes.Count)
+            {
+                Mod.Logger.Error($"customDtos missing for index {index}, returning...");
+                return;
+            }
+
+            DialogueNodeDTO dto = Mod.CustomDtos.nodes[index];
+            if (dto == null)
+            {
+                Mod.Logger.Error($"dto at index {index} is null, returning...");
                 return;
             }
             try
             {
-                int index = Mod.MappedNodes.FindIndex(n => n == node);
-
-                if (index == -1)
-                {
-                    Mod.Logger.Error("node does not have an audio clip, returning...");
-                    return;
-                }
-
-                if (Mod.customDtos == null || Mod.customDtos.nodes == null || index >= Mod.customDtos.nodes.Count)
-                {
-                    Mod.Logger.Error($"customDtos missing for index {index}, returning...");
-                    return;
-                }
-
-                DialogueNodeDTO dto = Mod.customDtos.nodes[index];
-                if (dto == null)
-                {
-                    Mod.Logger.Error($"dto at index {index} is null, returning...");
-                    return;
-                }
-
                 string path = NodeAudioManager.GetNodeAudioPath(dto);
                 AudioClip clip = AudioImporter.LoadAudio(path);
                 if (clip == null)
