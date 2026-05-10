@@ -1,29 +1,20 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
-using Il2CppSystem;
 using MelonLoader;
 using MelonLoader.Utils;
-using Miside_Zero_Dialogue_Override;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 namespace Miside_Zero_Dialogue_Override
 {
     public class Mod : MelonMod
     {
-        public static string GameVersion => UnityEngine.Application.version;
-        bool isGameScene => SceneManager.GetActiveScene().name == "Version 1.9 POST";
+        public static string GameVersion => Application.version;
+        bool IsGameScene => SceneManager.GetActiveScene().name == "Version 1.9 POST";
 
         DialogueTree[] trees;
 
@@ -33,16 +24,16 @@ namespace Miside_Zero_Dialogue_Override
 
         public static bool disabled = false;
 
-        string dialougePacksPath = Path.Combine(MelonEnvironment.ModsDirectory, "mszdlg");
-        public static string tmp => Path.Combine(UnityEngine.Application.temporaryCachePath, "Miside Zero Dialouge Override");
-        string nodesJsonPath => Path.Combine(tmp, "nodes.json");
+        private static readonly string dialougePacksPath = Path.Combine(MelonEnvironment.ModsDirectory, "mszdlg");
+        public static readonly string tmp = Path.Combine(Application.temporaryCachePath, "Miside Zero Dialouge Override");
+        private static readonly string nodesJsonPath = Path.Combine(tmp, "nodes.json");
 
         private static AudioSource source;
 
         public static MelonLogger.Instance Logger;
 
         public static float AvgDt;
-        private float smoothing = 5f;
+        private const float smoothing = 5f;
 
         public override void OnInitializeMelon()
         {
@@ -70,7 +61,7 @@ namespace Miside_Zero_Dialogue_Override
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
-            if (!isGameScene) return;
+            if (!IsGameScene) return;
 
             LoggerInstance.Msg("Mapping game dialogue...");
             trees = UnityEngine.Object.FindObjectsOfType<DialogueTree>();
@@ -91,77 +82,12 @@ namespace Miside_Zero_Dialogue_Override
             LoggerInstance.Msg("Creating audiohost...");
             GameObject audioHost = new GameObject("AudioHost");
             source = audioHost.AddComponent<AudioSource>();
-            UnityEngine.Object.DontDestroyOnLoad(audioHost);
+            Object.DontDestroyOnLoad(audioHost);
         }
 
         public override void OnUpdate()
         {
             AvgDt = (AvgDt * (smoothing - 1) + Time.unscaledDeltaTime) / smoothing;
-        }
-    }
-
-    [HarmonyPatch(typeof(DialogueTree), "PlayNode")]
-    public static class DialogueTreePatch
-    {
-        static void Prefix(DialogueNode node)
-        {
-            if (node == null)
-            {
-                Mod.Logger.Msg("node is null, returning...");
-                return;
-            }
-            try
-            {
-                int index = Mod.MappedNodes.FindIndex(n => n == node);
-
-                if (index == -1)
-                {
-                    Mod.Logger.Msg("node does not have an audio clip, returning...");
-                    return;
-                }
-
-                if (Mod.customDtos == null || Mod.customDtos.nodes == null || index >= Mod.customDtos.nodes.Count)
-                {
-                    Mod.Logger.Msg($"customDtos missing for index {index}, returning...");
-                    return;
-                }
-
-                DialogueNodeDTO dto = Mod.customDtos.nodes[index];
-                if (dto == null)
-                {
-                    Mod.Logger.Msg($"dto at index {index} is null, returning...");
-                    return;
-                }
-
-                string path = NodeAudioManager.GetNodeAudioPath(dto);
-                AudioClip clip = AudioImporter.LoadAudio(path);
-                if (clip == null)
-                {
-                    Mod.Logger.Msg("bass.dll asudio import failed, returning...");
-                    return;
-                }
-
-                // we're forced to estimate how long it will take based on fps due
-                // to il2cpp making patching coroutines impossible
-
-                // not an ideal fix.
-
-                // i couldn't figure out how to get the variable for
-                // some reason, if he changes typeSpeed im cooked
-
-                float typeSpeed = 0.025f;
-                float predictedTime = dto.dialogueText.Length * Mathf.Max(typeSpeed, Mod.AvgDt);
-                float fpsCompensation = predictedTime - dto.dialogueText.Length * typeSpeed;
-                float clipLengthCompensation = clip.length - predictedTime;
-                node.dialogueText = dto.dialogueText;
-                node.delay = fpsCompensation + clipLengthCompensation; // ignoring node delay for now
-                node.voiceClip = clip;
-            }
-            catch (System.Exception ex)
-            {
-                Mod.Logger.Error($"Failed to patch node with text \"{node.dialogueText}\" " +
-                    $"due to {ex.GetType().Name}: {ex.Message}");
-            }
         }
     }
 }
