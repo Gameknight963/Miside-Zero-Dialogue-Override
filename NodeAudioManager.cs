@@ -32,11 +32,5 @@ namespace Miside_Zero_Dialogue_Override
             );
             return (files.Length > 0 ? files[0] : null);
         }
-        public static DialogueForest LoadJson(string path)
-        {
-            string json = File.ReadAllText(path);
-            DialogueForest forest = JsonConvert.DeserializeObject<DialogueForest>(json);
-            return forest;
-        }
     }
 }
