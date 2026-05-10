@@ -325,5 +325,10 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="bass.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
