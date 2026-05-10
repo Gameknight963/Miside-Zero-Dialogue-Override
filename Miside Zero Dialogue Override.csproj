@@ -307,6 +307,7 @@
     <Compile Include="AudioImporter.cs" />
     <Compile Include="DialogueForest.cs" />
     <Compile Include="DialogueNodeDTO.cs" />
+    <Compile Include="DialogueTreePatch.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="NativeBass.cs" />
     <Compile Include="NodeAudioManager.cs" />
