@@ -39,7 +39,7 @@ namespace Miside_Zero_Dialogue_Override
         /// Gets or sets whether user dialogue packs should be loaded.
         /// Defaults to true.
         /// </summary>
-        public bool PacksEnabled { get; set; } = true;
+        public static bool PacksEnabled { get; set; } = true;
 
         public Mod()
         {
