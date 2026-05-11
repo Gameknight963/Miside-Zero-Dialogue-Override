@@ -9,9 +9,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Miside_Zero_Dialogue_Override
+namespace MZDO
 {
-    public class Mod : MelonMod
+    public class Core : MelonMod
     {
         public static string GameVersion => Application.version;
         bool IsGameScene => SceneManager.GetActiveScene().name == "Version 1.9 POST";

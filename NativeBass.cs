@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Miside_Zero_Dialogue_Override
+namespace MZDO
 {
     // get base.dll at https://www.un4seen.com/
 
