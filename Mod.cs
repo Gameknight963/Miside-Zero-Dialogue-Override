@@ -114,6 +114,7 @@ namespace Miside_Zero_Dialogue_Override
             ZipFile.ExtractToDirectory(path, tmp);
             string json = File.ReadAllText(nodesJsonPath);
             CustomDtos = JsonConvert.DeserializeObject<DialogueForest>(json);
+            Logger.Msg($"Loaded dialogue file {Path.GetFileName(path)}!");
         }
     }
 }
