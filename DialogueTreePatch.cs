@@ -52,6 +52,7 @@ namespace Miside_Zero_Dialogue_Override
             try
             {
                 string path = NodeAudioManager.GetNodeAudioPath(dto);
+                if (path == null) return;
                 AudioClip clip = AudioImporter.LoadAudio(path);
                 if (clip == null)
                 {
