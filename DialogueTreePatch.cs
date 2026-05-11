@@ -10,6 +10,8 @@ namespace Miside_Zero_Dialogue_Override
         static bool warned = false;
         static void Prefix(DialogueNode node)
         {
+            Mod.OnNodePlayed.Invoke(node);
+
             if (Mod.CustomDtos == null)
             {
                 if (!warned)
@@ -27,7 +29,6 @@ namespace Miside_Zero_Dialogue_Override
                 Mod.Logger.Warning("node is null, returning...");
                 return;
             }
-            Mod.OnNodePlayed.Invoke(node);
             int index = Mod.MappedNodes.FindIndex(n => n == node);
 
             if (index == -1)
