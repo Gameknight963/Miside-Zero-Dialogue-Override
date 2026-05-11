@@ -41,7 +41,7 @@ namespace Miside_Zero_Dialogue_Override
         /// </summary>
         public static bool PacksEnabled { get; set; } = true;
 
-        public Mod()
+        public override void OnEarlyInitializeMelon()
         {
             Logger = LoggerInstance;
         }
