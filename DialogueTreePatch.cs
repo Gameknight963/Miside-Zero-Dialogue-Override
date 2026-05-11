@@ -52,12 +52,15 @@ namespace Miside_Zero_Dialogue_Override
             try
             {
                 string path = NodeAudioManager.GetNodeAudioPath(dto);
-                if (path == null) return;
-                AudioClip clip = AudioImporter.LoadAudio(path);
-                if (clip == null)
+                AudioClip clip = null;
+                if (path != null)
                 {
-                    Mod.Logger.Error("bass.dll audio import failed, returning...");
-                    return;
+                    clip = AudioImporter.LoadAudio(path);
+                    if (clip == null)
+                    {
+                        Mod.Logger.Error("bass.dll audio import failed, returning...");
+                        return;
+                    }
                 }
 
                 // we're forced to estimate how long it will take based on fps due
@@ -67,7 +70,7 @@ namespace Miside_Zero_Dialogue_Override
                 float typeSpeed = DialogueManager.instance.typeSpeed;
                 float predictedTime = dto.dialogueText.Length * Mathf.Max(typeSpeed, Mod.AvgDt);
                 float fpsCompensation = predictedTime - dto.dialogueText.Length * typeSpeed;
-                float clipLengthCompensation = clip.length - predictedTime;
+                float clipLengthCompensation = clip is null ? 0 : clip.length - predictedTime;
                 node.dialogueText = dto.dialogueText;
                 node.delay += fpsCompensation + clipLengthCompensation;
                 node.voiceClip = clip;
