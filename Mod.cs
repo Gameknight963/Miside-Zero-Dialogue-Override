@@ -35,6 +35,8 @@ namespace Miside_Zero_Dialogue_Override
         public static float AvgDt;
         private const float smoothing = 5f;
 
+        public static System.Action<DialogueNode> OnNodePlayed;
+
         /// <summary>
         /// Gets or sets whether user dialogue packs should be loaded.
         /// Defaults to true.
