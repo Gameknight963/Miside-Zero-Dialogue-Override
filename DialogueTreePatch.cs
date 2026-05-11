@@ -32,13 +32,7 @@ namespace Miside_Zero_Dialogue_Override
 
             if (index == -1)
             {
-                Mod.Logger.Error("node does not have an audio clip, returning...");
-                return;
-            }
-
-            if (Mod.CustomDtos == null)
-            {
-                Mod.Logger.Error("No custom dialogue loaded");
+                Mod.Logger.Error("node is not mapped, returning...");
                 return;
             }
 
