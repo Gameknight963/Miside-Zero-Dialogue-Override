@@ -7,8 +7,21 @@ namespace Miside_Zero_Dialogue_Override
     [HarmonyPatch(typeof(DialogueTree), "PlayNode")]
     public static class DialogueTreePatch
     {
-        static void Prefix(DialogueTree __instance, DialogueNode node)
+        static bool warned = false;
+        static void Prefix(DialogueNode node)
         {
+            if (Mod.CustomDtos == null)
+            {
+                if (!warned)
+                {
+                    Mod.Logger.Error("Attempted to patch but no custom pack was loaded!");
+                    warned = true;
+                }
+                return;
+            }
+
+            warned = false;
+
             if (node == null)
             {
                 Mod.Logger.Warning("node is null, returning...");
