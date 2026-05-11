@@ -1,33 +1,27 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
-namespace Miside_Zero_Dialogue_Override
+namespace MZDO
 {
     public class NodeAudioManager
     {
         public static bool DoesNodeAudioExist(DialogueNodeDTO node)
         {
-            if (!Directory.Exists(Mod.tmp)) return false;
+            if (!Directory.Exists(Core.tmp)) return false;
             string[] files = Directory.GetFiles(
-                Mod.tmp,
+                Core.tmp,
                 $"{node.id}.*"
             );
             return (files.Length > 0);
         }
         public static string GetNodeAudioPath(DialogueNodeDTO node)
         {
-            if (!Directory.Exists(Mod.tmp))
+            if (!Directory.Exists(Core.tmp))
             {
-                Directory.CreateDirectory(Mod.tmp);
+                Directory.CreateDirectory(Core.tmp);
                 return null;
             }
             string[] files = Directory.GetFiles(
-                Mod.tmp,
+                Core.tmp,
                 $"{node.id}.*"
             );
             return (files.Length > 0 ? files[0] : null);

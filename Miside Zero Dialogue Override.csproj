@@ -4,7 +4,7 @@
     <TargetFramework>net472</TargetFramework>
 
     <OutputType>Library</OutputType>
-    <RootNamespace>Miside_Zero_Dialogue_Override</RootNamespace>
+    <RootNamespace>MZDO</RootNamespace>
     <AssemblyName>Miside Zero Dialogue Override</AssemblyName>
     <Deterministic>true</Deterministic>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

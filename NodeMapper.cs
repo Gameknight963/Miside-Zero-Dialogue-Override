@@ -1,7 +1,7 @@
 ﻿using Il2Cpp;
 using System.Collections.Generic;
 
-namespace Miside_Zero_Dialogue_Override
+namespace MZDO
 {
     public static class NodeMapper
     {

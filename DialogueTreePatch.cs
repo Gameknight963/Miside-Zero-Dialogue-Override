@@ -2,7 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace Miside_Zero_Dialogue_Override
+namespace MZDO
 {
     [HarmonyPatch(typeof(DialogueTree), "PlayNode")]
     public static class DialogueTreePatch
@@ -10,13 +10,13 @@ namespace Miside_Zero_Dialogue_Override
         static bool warned = false;
         static void Prefix(DialogueNode node)
         {
-            Mod.OnNodePlayed.Invoke(node);
+            Core.OnNodePlayed.Invoke(node);
 
-            if (Mod.CustomDtos == null)
+            if (Core.CustomDtos == null)
             {
                 if (!warned)
                 {
-                    Mod.Logger.Error("Attempted to patch but no custom pack was loaded!");
+                    Core.Logger.Error("Attempted to patch but no custom pack was loaded!");
                     warned = true;
                 }
                 return;
@@ -26,27 +26,27 @@ namespace Miside_Zero_Dialogue_Override
 
             if (node == null)
             {
-                Mod.Logger.Warning("node is null, returning...");
+                Core.Logger.Warning("node is null, returning...");
                 return;
             }
-            int index = Mod.MappedNodes.FindIndex(n => n == node);
+            int index = Core.MappedNodes.FindIndex(n => n == node);
 
             if (index == -1)
             {
-                Mod.Logger.Error("node is not mapped, returning...");
+                Core.Logger.Error("node is not mapped, returning...");
                 return;
             }
 
-            if (Mod.CustomDtos.nodes == null || index >= Mod.CustomDtos.nodes.Count)
+            if (Core.CustomDtos.nodes == null || index >= Core.CustomDtos.nodes.Count)
             {
-                Mod.Logger.Error($"customDtos missing for index {index}, returning...");
+                Core.Logger.Error($"customDtos missing for index {index}, returning...");
                 return;
             }
 
-            DialogueNodeDTO dto = Mod.CustomDtos.nodes[index];
+            DialogueNodeDTO dto = Core.CustomDtos.nodes[index];
             if (dto == null)
             {
-                Mod.Logger.Error($"dto at index {index} is null, returning...");
+                Core.Logger.Error($"dto at index {index} is null, returning...");
                 return;
             }
             try
@@ -58,7 +58,7 @@ namespace Miside_Zero_Dialogue_Override
                     clip = AudioImporter.LoadAudio(path);
                     if (clip == null)
                     {
-                        Mod.Logger.Error("bass.dll audio import failed, returning...");
+                        Core.Logger.Error("bass.dll audio import failed, returning...");
                         return;
                     }
                 }
@@ -68,17 +68,17 @@ namespace Miside_Zero_Dialogue_Override
 
                 // not an ideal fix
                 float typeSpeed = DialogueManager.instance.typeSpeed;
-                float predictedTime = dto.dialogueText.Length * Mathf.Max(typeSpeed, Mod.AvgDt);
+                float predictedTime = dto.dialogueText.Length * Mathf.Max(typeSpeed, Core.AvgDt);
                 float fpsCompensation = predictedTime - dto.dialogueText.Length * typeSpeed;
                 float clipLengthCompensation = clip is null ? 0 : clip.length - predictedTime;
                 node.dialogueText = dto.dialogueText;
                 node.delay += fpsCompensation + clipLengthCompensation;
                 node.voiceClip = clip;
-                Mod.OnDTOPlayed.Invoke(dto);
+                Core.OnDTOPlayed.Invoke(dto);
             }
             catch (System.Exception ex)
             {
-                Mod.Logger.Error($"Failed to patch node with text \"{node.dialogueText}\" " +
+                Core.Logger.Error($"Failed to patch node with text \"{node.dialogueText}\" " +
                     $"due to {ex.GetType().Name}: {ex.Message}");
             }
         }
