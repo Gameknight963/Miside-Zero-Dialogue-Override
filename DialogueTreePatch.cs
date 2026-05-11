@@ -74,6 +74,7 @@ namespace Miside_Zero_Dialogue_Override
                 node.dialogueText = dto.dialogueText;
                 node.delay += fpsCompensation + clipLengthCompensation;
                 node.voiceClip = clip;
+                Mod.OnDTOPlayed.Invoke(dto);
             }
             catch (System.Exception ex)
             {
