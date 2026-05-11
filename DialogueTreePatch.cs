@@ -10,7 +10,7 @@ namespace MZDO
         static bool warned = false;
         static void Prefix(DialogueNode node)
         {
-            Core.OnNodePlayed.Invoke(node);
+            Core.OnNodePlayed?.Invoke(node);
 
             if (Core.CustomDtos == null)
             {
@@ -74,7 +74,7 @@ namespace MZDO
                 node.dialogueText = dto.dialogueText;
                 node.delay += fpsCompensation + clipLengthCompensation;
                 node.voiceClip = clip;
-                Core.OnDTOPlayed.Invoke(dto);
+                Core.OnDTOPlayed?.Invoke(dto);
             }
             catch (System.Exception ex)
             {
