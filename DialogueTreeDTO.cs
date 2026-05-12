@@ -9,5 +9,6 @@ namespace MZDO
         public float? chirpTime;
         public float? initialDelay;
         public float? exitDelay;
+        public string name;
     }
 }
