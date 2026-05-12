@@ -11,9 +11,6 @@ namespace MZDO
         static void Prefix(DialogueNode node)
         {
             Core.OnNodePlayed?.Invoke(node);
-            string originalText = node.dialogueText;
-            float originalDelay = node.delay;
-            AudioClip originalClip = node.voiceClip;
 
             if (Core.CustomDtos == null)
             {
@@ -78,9 +75,6 @@ namespace MZDO
                 node.delay += fpsCompensation + clipLengthCompensation;
                 node.voiceClip = clip;
                 Core.OnDTOPlayed?.Invoke(dto);
-                node.dialogueText = originalText;
-                node.delay = originalDelay;
-                node.voiceClip = originalClip;
             }
             catch (System.Exception ex)
             {
