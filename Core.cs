@@ -13,22 +13,16 @@ namespace MZDO
 {
     public class Core : MelonMod
     {
-        public static string GameVersion => Application.version;
         bool IsGameScene => SceneManager.GetActiveScene().name == "Version 1.9 POST";
 
         DialogueTree[] trees;
 
         public static List<DialogueNode> MappedNodes;
-        public static DialogueForest CustomDtos { get; set; }
-        List<DialogueNodeDTO> mappedDtos;
-
-        public static bool disabled = false;
+        public static DialoguePack Pack { get; set; }
 
         private static readonly string dialougePacksPath = Path.Combine(MelonEnvironment.ModsDirectory, "mszdlg");
-        public static readonly string tmp = Path.Combine(Application.temporaryCachePath, "Miside Zero Dialouge Override");
+        public static readonly string tmp = Path.Combine(Application.temporaryCachePath, "Dialogue");
         private static readonly string nodesJsonPath = Path.Combine(tmp, "nodes.json");
-
-        private static AudioSource source;
 
         public static MelonLogger.Instance Logger;
 
@@ -43,6 +37,8 @@ namespace MZDO
         /// Defaults to true.
         /// </summary>
         public static bool UserPacksEnabled { get; set; } = true;
+
+        public const int PackFormatVersion = 1;
 
         public override void OnEarlyInitializeMelon()
         {
@@ -67,40 +63,39 @@ namespace MZDO
             }
 
             string file = files[0];
-            try
-            {
-                LoadMszdlg(file);
-                LoggerInstance.Msg("Loaded custom dialogue!");
-            }
-            catch (System.Exception ex)
-            {
-                throw new System.InvalidOperationException($"{ex.GetType().Name} while reading dialogue pack \"{file}\": {ex.Message}");
-            }
+            LoadMszdlg(file);
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
             if (!IsGameScene) return;
+            if (Pack == null) return;
 
             LoggerInstance.Msg("Mapping game dialogue...");
             trees = Object.FindObjectsOfType<DialogueTree>();
 
-            MappedNodes = trees.SelectMany(t => t.GetAllNodes()).ToList();
-            mappedDtos = MappedNodes.Select(node => new DialogueNodeDTO
+            for (int i = 0; i < trees.Length; i++)
             {
-                id = MappedNodes.IndexOf(node),
-                dialogueText = node.dialogueText,
-                speakerName = node.speakerName,
-                delay = node.delay,
-                nextNodeIds = node.nextNodes?
-                     .Where(n => n != null)
-                     .Select(n => MappedNodes.IndexOf(n))
-                     .ToArray()
-            }).ToList();
+                if (i >= Pack.trees.Count) break;
+                Dictionary<int, DialogueNode> nodeLookup = trees[i]
+                    .GetAllNodes()
+                    .Select((node, index) => (node, index))
+                    .ToDictionary(x => x.index, x => x.node);
+
+                foreach (DialogueNodeDTO dto in Pack.trees[i].nodes)
+                {
+                    if (!nodeLookup.TryGetValue(dto.id, out DialogueNode node)) continue;
+                    node.dialogueText = dto.dialogueText;
+                    node.speakerName = dto.speakerName;
+                    node.delay = dto.delay;
+                    string audioPath = NodeAudioManager.GetNodeAudioPath(i, dto.id);
+                    if (audioPath != null)
+                        node.voiceClip = AudioImporter.LoadAudio(audioPath);
+                }
+            }
 
             LoggerInstance.Msg("Creating audiohost...");
             GameObject audioHost = new GameObject("AudioHost");
-            source = audioHost.AddComponent<AudioSource>();
             Object.DontDestroyOnLoad(audioHost);
         }
 
@@ -114,8 +109,14 @@ namespace MZDO
             if (Directory.Exists(tmp)) Directory.Delete(tmp, true);
             ZipFile.ExtractToDirectory(path, tmp);
             string json = File.ReadAllText(nodesJsonPath);
-            CustomDtos = JsonConvert.DeserializeObject<DialogueForest>(json);
-            Logger.Msg($"Loaded dialogue file {Path.GetFileName(path)}!");
+            Pack = JsonConvert.DeserializeObject<DialoguePack>(json);
+            if (Pack.PackFormat != PackFormatVersion)
+                Logger.Warning($"Pack format mismatch: expected {PackFormatVersion}, got {Pack.PackFormat}. Dialogue may not work as expected.");
+            if (Pack.TargetGameVersion != Application.version)
+                Logger.Warning($"Pack targets game version {Pack.TargetGameVersion} but current version is {Application.version}. " +
+                    $"Dialogue may not work as expected.");
+
+            Logger.Msg($"Loaded dialogue file {Path.GetFileName(path)}.");
         }
     }
 }
