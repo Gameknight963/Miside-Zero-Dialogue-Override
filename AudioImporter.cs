@@ -39,6 +39,5 @@ namespace MZDO
             NativeBass.BASS_StreamFree(handle);
             return clip;
         }
-
     }
 }
