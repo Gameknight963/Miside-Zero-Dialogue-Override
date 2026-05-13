@@ -38,7 +38,7 @@ namespace MZDO
         /// </summary>
         public static bool UserPacksEnabled { get; set; } = true;
 
-        public const int PackFormatVersion = 1;
+        public const int PackFormatVersion = 2;
 
         public override void OnEarlyInitializeMelon()
         {
