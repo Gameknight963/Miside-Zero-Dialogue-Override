@@ -16,6 +16,7 @@
    
    > You should ony put one dialogue pack. If you put more, the mod will just load the first one it finds. I might add a GUI to load the one you want in the future
 
+## WARNING! ANYTHING PAST HERE SEVERELY OUT OF DATE AND DISCUSSES FEATURES THAT ARE NOT IN THE LATEST RELEASE
 ### For developers
 
 You can use this mod to load your own packs. In `OnInitializeMelon`, set `Mod.UserPacksEnabled` to false. This will prevent it from loading packs from the mszdlg folder. 
