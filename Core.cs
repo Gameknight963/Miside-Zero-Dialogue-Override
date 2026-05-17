@@ -69,6 +69,7 @@ namespace MZDO
         {
             if (!IsGameScene) return;
             if (Pack == null) return;
+            bool wasSuccess = true;
 
             LoggerInstance.Msg("Patching game dialogue...");
             trees = Object.FindObjectsOfType<DialogueTree>();
@@ -100,7 +101,10 @@ namespace MZDO
                     node.delay = dto.delay;
                     string audioPath = NodeAudioManager.GetNodeAudioPath(i, dto.id);
                     if (audioPath != null)
-                        node.voiceClip = AudioImporter.LoadAudio(audioPath);
+                    {
+                        node.voiceClip = VoidLib2.AudioImporter.Bass.LoadAudio(audioPath, out int code);
+                        if (code != 0) LoggerInstance.Error($"Bass audio import failed with code {code}");
+                    }
                 }
 
                 foreach (DialogueNodeDTO dto in Pack.trees[i].nodes)
@@ -123,7 +127,8 @@ namespace MZDO
                     node.nextNodes = patchedNextNodes.ToArray();
                 }
             }
-            LoggerInstance.Msg("Dialogue patched successfully");
+            if (wasSuccess) LoggerInstance.Msg("Dialogue patched successfully");
+            else LoggerInstance.Warning("Some parts of the dialogue patching failed. This may cause incorrect behavior.");
             DialogueEvents.OnDialoguePatched?.Invoke();
         }
 
