@@ -71,8 +71,10 @@ namespace MZDO
             if (!IsGameScene) return;
             if (Pack == null) return;
 
-            LoggerInstance.Msg("Mapping game dialogue...");
+            LoggerInstance.Msg("Patching game dialogue...");
             trees = Object.FindObjectsOfType<DialogueTree>();
+
+            LoggerInstance.Msg("Beginning first pass");
 
             for (int i = 0; i < trees.Length; i++)
             {
@@ -103,6 +105,8 @@ namespace MZDO
                     if (audioPath != null)
                         node.voiceClip = AudioImporter.LoadAudio(audioPath);
                 }
+
+                LoggerInstance.Msg("Beginning second pass");
 
                 foreach (DialogueNodeDTO dto in Pack.trees[i].nodes)
                 {
