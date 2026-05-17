@@ -8,9 +8,9 @@ namespace MZDO
     {
         static void Prefix(DialogueTree __instance, DialogueNode node)
         {
-            DialogueEvents.OnNodePlayed.Invoke(node);
+            DialogueEvents.OnNodePlayed?.Invoke(node);
             if (node.voiceClip)
-                __instance.GetSpeakerAudioSource(node.speakerName).pitch = 1f;
+                __instance.GetSpeakerAudioSource(node.speakerName)?.pitch = 1f;
         }
     }
 }

@@ -124,7 +124,7 @@ namespace MZDO
                 }
             }
             LoggerInstance.Msg("Dialogue patched successfully");
-            DialogueEvents.OnDialoguePatched.Invoke();
+            DialogueEvents.OnDialoguePatched?.Invoke();
         }
 
         public override void OnUpdate()
@@ -145,7 +145,7 @@ namespace MZDO
                     $"Dialogue may not work as expected.");
 
             Logger.Msg($"Loaded dialogue file {Path.GetFileName(path)}.");
-            DialogueEvents.OnPackLoaded.Invoke(Pack);
+            DialogueEvents.OnPackLoaded?.Invoke(Pack);
         }
     }
 }
