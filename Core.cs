@@ -20,7 +20,7 @@ namespace MZDO
         public static DialoguePack Pack { get; set; }
 
         private static readonly string dialougePacksPath = Path.Combine(MelonEnvironment.ModsDirectory, "mszdlg");
-        public static readonly string tmp = Path.Combine(Application.temporaryCachePath, "Overridden Dialogue Cache");
+        public static readonly string tmp = Path.Combine(Application.temporaryCachePath, "Miside Zero Dialogue Override");
         private static readonly string nodesJsonPath = Path.Combine(tmp, "nodes.json");
 
         public static MelonLogger.Instance Logger;
