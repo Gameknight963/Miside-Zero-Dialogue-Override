@@ -21,7 +21,7 @@ namespace MZDO
         public static DialoguePack Pack { get; set; }
 
         private static readonly string dialougePacksPath = Path.Combine(MelonEnvironment.ModsDirectory, "mszdlg");
-        public static readonly string tmp = Path.Combine(Application.temporaryCachePath, "Dialogue");
+        public static readonly string tmp = Path.Combine(Application.temporaryCachePath, "Overridden Dialogue Cache");
         private static readonly string nodesJsonPath = Path.Combine(tmp, "nodes.json");
 
         public static MelonLogger.Instance Logger;
@@ -77,14 +77,25 @@ namespace MZDO
             for (int i = 0; i < trees.Length; i++)
             {
                 if (i >= Pack.trees.Count) break;
-                Dictionary<int, DialogueNode> nodeLookup = trees[i]
-                    .GetAllNodes()
-                    .Select((node, index) => (node, index))
-                    .ToDictionary(x => x.index, x => x.node);
-
+                Dictionary<int, DialogueNode> nodeLookup = [];
                 foreach (DialogueNodeDTO dto in Pack.trees[i].nodes)
                 {
-                    if (!nodeLookup.TryGetValue(dto.id, out DialogueNode node)) continue;
+                    DialogueNode node;
+
+                    if (dto.id >= 0)
+                    {
+                        if (!nodeLookup.TryGetValue(dto.id, out node))
+                        {
+                            node = trees[i].GetAllNodes()[dto.id];
+                            nodeLookup[dto.id] = node;
+                        }
+                    }
+                    else
+                    {
+                        node = ScriptableObject.CreateInstance<DialogueNode>();
+                        nodeLookup[dto.id] = node;
+                    }
+
                     node.dialogueText = dto.dialogueText;
                     node.speakerName = dto.speakerName;
                     node.delay = dto.delay;
@@ -92,10 +103,31 @@ namespace MZDO
                     if (audioPath != null)
                         node.voiceClip = AudioImporter.LoadAudio(audioPath);
                 }
+
+                foreach (DialogueNodeDTO dto in Pack.trees[i].nodes)
+                {
+                    if (!nodeLookup.TryGetValue(dto.id, out DialogueNode node))
+                        continue;
+
+                    List<DialogueNode> patchedNextNodes = new();
+
+                    if (dto.nextNodeIds != null)
+                    {
+                        foreach (int nextId in dto.nextNodeIds)
+                        {
+                            if (nodeLookup.TryGetValue(nextId, out DialogueNode nextNode))
+                            {
+                                patchedNextNodes.Add(nextNode);
+                            }
+                        }
+                    }
+
+                    node.nextNodes = patchedNextNodes.ToArray();
+                }
             }
 
             LoggerInstance.Msg("Creating audiohost...");
-            GameObject audioHost = new GameObject("AudioHost");
+            GameObject audioHost = new("AudioHost");
             Object.DontDestroyOnLoad(audioHost);
         }
 
