@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -49,7 +48,7 @@ namespace MZDO
         {
             if (!UserPacksEnabled)
             {
-                LoggerInstance.Msg("User packs have been disabled by a mod." +
+                LoggerInstance.Msg("User packs have been disabled by a mod. " +
                     "The mod will probably load its own pack instead.");
                 return;
             }
@@ -125,6 +124,7 @@ namespace MZDO
                 }
             }
             LoggerInstance.Msg("Dialogue patched successfully");
+            DialogueEvents.OnDialoguePatched.Invoke();
         }
 
         public override void OnUpdate()
@@ -145,6 +145,7 @@ namespace MZDO
                     $"Dialogue may not work as expected.");
 
             Logger.Msg($"Loaded dialogue file {Path.GetFileName(path)}.");
+            DialogueEvents.OnPackLoaded.Invoke(Pack);
         }
     }
 }
