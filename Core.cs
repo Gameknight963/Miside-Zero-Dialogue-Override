@@ -124,6 +124,7 @@ namespace MZDO
                     node.nextNodes = patchedNextNodes.ToArray();
                 }
             }
+            LoggerInstance.Msg("Dialogue patched successfully");
         }
 
         public override void OnUpdate()
