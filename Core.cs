@@ -109,7 +109,7 @@ namespace MZDO
                     if (!nodeLookup.TryGetValue(dto.id, out DialogueNode node))
                         continue;
 
-                    List<DialogueNode> patchedNextNodes = new();
+                    List<DialogueNode> patchedNextNodes = [];
 
                     if (dto.nextNodeIds != null)
                     {
@@ -121,14 +121,9 @@ namespace MZDO
                             }
                         }
                     }
-
                     node.nextNodes = patchedNextNodes.ToArray();
                 }
             }
-
-            LoggerInstance.Msg("Creating audiohost...");
-            GameObject audioHost = new("AudioHost");
-            Object.DontDestroyOnLoad(audioHost);
         }
 
         public override void OnUpdate()
