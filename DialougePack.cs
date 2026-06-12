@@ -5,7 +5,7 @@ namespace MZDO
 {
     public class DialoguePack
     {
-        public int PackFormat = 1;
+        public int PackFormat = Core.PackFormatVersion;
         public string TargetGameVersion = Application.version;
         public List<DialogueTreeDTO> trees;
     }
