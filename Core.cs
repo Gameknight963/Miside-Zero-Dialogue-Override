@@ -99,6 +99,7 @@ namespace MZDO
                     node.dialogueText = dto.dialogueText;
                     node.speakerName = dto.speakerName;
                     node.delay = dto.delay;
+                    node.expression = dto.expression ?? ""; // null expression value causes dialogue to stop
                     string audioPath = NodeAudioManager.GetNodeAudioPath(i, dto.id);
                     if (audioPath != null)
                     {

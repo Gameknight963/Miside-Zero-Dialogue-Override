@@ -6,6 +6,7 @@
         public int[] nextNodeIds;
         public string dialogueText;
         public string speakerName;
+        public string expression;
         public float delay;
     }
 }
