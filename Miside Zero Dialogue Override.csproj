@@ -28,6 +28,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<GamePath>C:\Users\gameknight963\projects\launcher.NET\bin\Debug\net10.0-windows\games\broken void_abd72c6a-4b88-4bc2-aae6-c621dda10f83</GamePath>
+	</PropertyGroup>
+	
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp">
 			<HintPath>$(GamePath)/MelonLoader\Il2CppAssemblies\Assembly-CSharp.dll</HintPath>
