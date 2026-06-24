@@ -29,7 +29,7 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<GamePath>C:\Users\gameknight963\projects\launcher.NET\bin\Debug\net10.0-windows\games\broken void_abd72c6a-4b88-4bc2-aae6-c621dda10f83</GamePath>
+		<GamePath>C:\Users\sebis\projects\launcherdotnet\bin\Debug\net10.0-windows\games\adding bhop to msz_c88722bf-25f5-4e81-924a-5f62d9d41032</GamePath>
 	</PropertyGroup>
 	
 	<ItemGroup>
@@ -64,7 +64,7 @@
 			<HintPath>$(GamePath)/MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
 		</Reference>
 		<Reference Include="VoidLib2">
-		  <HintPath>..\launcher.NET\bin\Debug\net10.0-windows\games\msz voiceover 2_fb7683e9-e444-49be-aa75-a09661ae559a\UserLibs\VoidLib2.dll</HintPath>
+		  <HintPath>$(GamePath)\UserLibs\VoidLib2.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 
