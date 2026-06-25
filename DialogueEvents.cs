@@ -1,5 +1,6 @@
 ﻿using Il2Cpp;
 using System;
+using MZDO.Shared;
 
 namespace MZDO
 {

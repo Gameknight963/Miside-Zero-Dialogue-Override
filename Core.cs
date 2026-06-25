@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MZDO.Shared;
 
 namespace MZDO
 {
@@ -37,8 +38,6 @@ namespace MZDO
         /// </summary>
         public static bool UserPacksEnabled { get; set; } = true;
 
-        public const int PackFormatVersion = 3;
-
         public override void OnEarlyInitializeMelon()
         {
             Logger = LoggerInstance;
@@ -48,8 +47,7 @@ namespace MZDO
         {
             if (!UserPacksEnabled)
             {
-                LoggerInstance.Msg("User packs have been disabled by a mod. " +
-                    "The mod will probably load its own pack instead.");
+                LoggerInstance.Msg("User packs have been disabled by a mod.");
                 return;
             }
             LoggerInstance.Msg("Loading custom dialogue pack...");
@@ -144,8 +142,8 @@ namespace MZDO
             ZipFile.ExtractToDirectory(path, tmp);
             string json = File.ReadAllText(nodesJsonPath);
             Pack = JsonConvert.DeserializeObject<DialoguePack>(json);
-            if (Pack.PackFormat != PackFormatVersion)
-                Logger.Warning($"Pack format mismatch: expected {PackFormatVersion}, got {Pack.PackFormat}. Dialogue may not work as expected.");
+            if (Pack.PackFormat != PacksInfo.PacksFormatVersion)
+                Logger.Warning($"Pack format mismatch: expected {PacksInfo.PacksFormatVersion}, got {Pack.PackFormat}. Dialogue may not work as expected.");
             if (Pack.TargetGameVersion != Application.version)
                 Logger.Warning($"Pack targets game version {Pack.TargetGameVersion} but current version is {Application.version}. " +
                     $"Dialogue may not work as expected.");

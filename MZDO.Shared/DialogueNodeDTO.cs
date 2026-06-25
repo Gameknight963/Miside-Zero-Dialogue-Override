@@ -1,4 +1,4 @@
-﻿namespace MZDO
+﻿namespace MZDO.Shared
 {
     public class DialogueNodeDTO
     {

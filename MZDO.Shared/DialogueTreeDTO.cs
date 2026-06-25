@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MZDO
+namespace MZDO.Shared
 {
     public class DialogueTreeDTO
     {

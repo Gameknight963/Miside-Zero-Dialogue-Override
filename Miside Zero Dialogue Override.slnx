@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="Miside Zero Dialogue Override.csproj" Id="2d866668-0333-4b52-a5a7-dd6a535966d1" />
+  <Project Path="MZDO.Shared/MZDO.Shared.csproj" Id="6a31eff8-4aed-440a-ba41-4c856e19498c" />
 </Solution>
