@@ -1,3 +1,9 @@
+# Development has moved
+
+This repo is stale and will not be updated. Development has moved to the MZDO repo:
+
+https://github.com/Gameknight963/MZDO
+
 ## Installation
 
 1. Install Melonloader
